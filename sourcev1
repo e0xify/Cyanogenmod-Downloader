@@ -1,0 +1,96 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=favicon.ico
+#AutoIt3Wrapper_Outfile=Cyanogenmod.exe
+#AutoIt3Wrapper_UseX64=n
+#AutoIt3Wrapper_Res_Description=Cyanogenmod Downloader
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.0
+#AutoIt3Wrapper_Res_LegalCopyright=by Kev_K
+#AutoIt3Wrapper_Res_Language=1031
+#AutoIt3Wrapper_Res_requestedExecutionLevel=asInvoker
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#cs ----------------------------------------------------------------------------
+
+	AutoIt Version: 3.3.8.1
+	Author:         Kev_K
+
+	Script Function:
+	Template AutoIt script.
+
+#ce ----------------------------------------------------------------------------
+
+; Script Start - Add your code below here
+
+
+#include <GUIConstantsEx.au3>
+#include <WindowsConstants.au3>
+#include <inet.au3>
+#include <String.au3>
+#include <Array.au3>
+
+$type = "Stable"
+$data = _INetGetSource("http://get.cm/?type=Stable")
+
+$device = _StringBetween($data, '<br/><small class="md5">', '</small></td>')
+$download = _StringBetween($data, '&nbsp; <b>Direct Download</b>:', '">cm')
+
+For $i = 0 To UBound($download) - 1
+	$download[$i] = StringTrimLeft($download[$i], 19)
+Next
+
+;_ArrayDisplay($device)
+
+
+GUICreate("XDA - Get Cyanogenmod", 250, 250)
+GUICtrlCreateLabel("Select CM Release Type", 65, 10, 150, 25)
+$type = GUICtrlCreateCombo("Stable", 70, 40, 100, 25)
+GUICtrlSetData(-1, "Nightly")
+
+$btn = GUICtrlCreateButton("Download", 70, 200, 100, 25)
+GUICtrlCreateLabel("Select your Device", 70, 80, 100, 25)
+$devicelist = GUICtrlCreateCombo("", 50, 110, 170, 25)
+
+;$cmlist = GuictrlcreateCombo("",20,150,370,25)
+$author = GUICtrlCreateLabel("", 20, 170, 100, 25)
+GUISetState(@SW_SHOW) ; will display an empty dialog box
+
+For $i = 0 To UBound($device) - 1
+	GUICtrlSetData($devicelist, $device[$i])
+Next
+
+; Run the GUI until the dialog is closed
+While 1
+	$msg = GUIGetMsg()
+	Switch $msg
+		Case $btn
+			$wert = GUICtrlRead($devicelist)
+			For $a = 0 To UBound($device) - 1
+				If $device[$a] = $wert Then
+					ShellExecute("http://get.cm" & $download[$a])
+					;Guictrlsetdata($cmlist,"")
+					;Guictrlsetdata($cmlist,$download[$a])
+					$test = _StringBetween($download[$a],"-",".zip")
+
+					$test = _StringBetween($download[$a],"-",".zip")
+			GuictrlcreateLabel("You are currently downloading CM v." & $test[0],10,150,300,25)
+				EndIf
+			Next
+		Case $type
+			$data = _INetGetSource("http://get.cm/?type=" & GUICtrlRead($type))
+			$device = _StringBetween($data, '<br/><small class="md5">', '</small></td>')
+			$download = _StringBetween($data, '&nbsp; <b>Direct Download</b>:', '">cm')
+			For $i = 0 To UBound($download) - 1
+				$download[$i] = StringTrimLeft($download[$i], 19)
+			Next
+			GUICtrlSetData($devicelist, "")
+			For $i = 0 To UBound($device) - 1
+				GUICtrlSetData($devicelist, $device[$i])
+			Next
+
+			;Guictrlsetdata($authori,"by" &)
+			;_ArrayDisplay($download)
+		case $devicelist
+
+	EndSwitch
+	If $msg = $GUI_EVENT_CLOSE Then ExitLoop
+WEnd
+GUIDelete()
