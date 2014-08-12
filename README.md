@@ -1,4 +1,4 @@
 CMD
 ===
 
-Cyanogenmod Downloader
+Cyanogenmod Downloader for WIndows
